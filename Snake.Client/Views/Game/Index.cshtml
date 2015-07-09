@@ -1,0 +1,73 @@
+﻿@model Snake.Client.Models.UserModel
+
+@{
+    Layout = null;  
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Play</title>
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        var Token = "@Model.Token";
+    </script>
+    <style type="text/css">
+        p {
+            text-align:left;
+        }
+    </style>
+</head>
+<body style="margin:0; background-color:black">
+    <div style="margin:20px">
+        
+        <center>
+            <canvas style="background-color:white;border-radius:500px;" width="1000" height="1000" id="game"></canvas>
+            <p style="position:absolute;color:white;font-family:Arial;top:30px;left:20px;">
+                Score: <span id="ScoreLb">0</span> (<span id="PersonalLb"></span>)
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;top:70px;left:20px;">
+                Current leader: <span id="CurrentLeaderLb"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;top:100px;left:20px;">
+                Leaderboard: <br/>
+                <span id="Leaderboard"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;top:30px;right:20px;">
+                FPS: <span id="FpsLb"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;bottom:110px;left:20px;">
+                Armor: <span id="ArmorLb"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;bottom:70px;left:20px;">
+                Ammo: <span id="AmmoLb"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;bottom:30px;left:20px;">
+                Boost: <span id="BoostLb"></span>
+            </p>
+            <p style="position:absolute;color:white;font-family:Arial;top:70px;right:20px;">
+                Players online: <span id="OnlineLb"></span>
+                <br/>
+                <br/>
+                <span id="PlayersOnlineLb"></span>
+            </p>
+            <p id="Controls" style="position:absolute;color:white;font-family:Arial;bottom:30px;right:20px;">
+                <strong>
+                    Controls
+                </strong>
+                <br/> Turn left: Left arrow key
+                <br/> Turn right: Right arrow key
+                <br/> Shoot: Space bar
+                <br/> Boost: Shift
+                <br/><br/><a style="color:white;" href="/Home/Logout">Logout</a>
+            </p>
+        </center>
+
+    </div>
+
+    <script src="~/Content/Game.js"></script>
+
+</body>
+</html>
