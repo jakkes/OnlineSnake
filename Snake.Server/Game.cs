@@ -143,7 +143,7 @@ namespace Snake.Server
 
         private void settingsCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _onlineCount = _snakes.Count;
+            _onlineCount = Snakes.Count(x => x.RealPlayer);
         }
         #endregion
 
