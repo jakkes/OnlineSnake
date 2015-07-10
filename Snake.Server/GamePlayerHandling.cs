@@ -27,10 +27,15 @@ namespace Snake.Server
         public GameLoopModel GetLoopData(string Token, LoopRequestModel model)
         {
             Player snake = GetPlayer(Token);
-
             snake.Turn = model.Turn;
             if (snake.Boost != model.Boost)
                 snake.Boost = model.Boost;
+            if (snake.Break != model.Break)
+                snake.Break = model.Break;
+            if (model.Shoot == true)
+            {
+                snake.Shoot();
+            }
 
             var Head = snake.Head;
             GameLoopModel r = new GameLoopModel();
@@ -39,6 +44,7 @@ namespace Snake.Server
             r.AmmoCount = snake.Ammo;
             r.BoostStored = snake.BoostStored;
             r.PlayerArmor = snake.Armor;
+            r.BreakStored = snake.BreakStored;
 
             #region Snakes
             foreach (var s in Snakes)

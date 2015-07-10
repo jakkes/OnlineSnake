@@ -4,6 +4,7 @@ var context = canvas.getContext("2d");
 function connect(url, callback) {
     $.ajax({
         url: url,
+        timeout:1000,
         success: callback,
         error: function (){
             console.log("Timeout");
@@ -22,7 +23,8 @@ PlayerSettings = {
     turnLeft: 37,
     turnRight: 39,
     shoot: 32,
-    boost: 16
+    boost: 38,
+    _break: 40
 }
 
 function shoot() {
@@ -73,10 +75,13 @@ function loop() {
             contentType: "application/json",
             data: JSON.stringify({
                 "Turn": turn,
-                "Boost": _boost
+                "Boost": _boost,
+                "Break": _break,
+                "Shoot": _shoot
             }),
             timeout: 100,
             success: function (data) {
+                _shoot = false;
                 draw(data);
             },
             error: function () {
@@ -121,7 +126,8 @@ function draw(d) {
         $("#ScoreLb").text(d.Score);
         $("#AmmoLb").text(d.AmmoCount);
         $("#ArmorLb").text(d.PlayerArmor);
-        $("#BoostLb").text(Math.round(d.BoostStored / 100) / 10 + "/" + GameSettings.BOOST_CAP / 1000);
+        $("#BoostLb").text(Math.round(d.BoostStored / 100) + "/" + GameSettings.BOOST_CAP / 100);
+        $("#BreakLb").text(Math.round(d.BreakStored / 100) + "/" + GameSettings.BOOST_CAP / 100);
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         for (var i = 0; i < d.Borders.length; i++) {
@@ -192,6 +198,8 @@ window.addEventListener("keyup", keyUp)
 var _leftKey = false;
 var _rightKey = false;
 var _boost = false;
+var _break = false;
+var _shoot = false;
 
 function keyDown(data) {
     switch (data.keyCode) {
@@ -202,10 +210,13 @@ function keyDown(data) {
             _rightKey = true;
             break;
         case PlayerSettings.shoot:
-            shoot();
+            _shoot = true;
             break;
         case PlayerSettings.boost:
             _boost = true;
+            break;
+        case PlayerSettings._break:
+            _break = true;
             break;
     }
 }
@@ -220,6 +231,9 @@ function keyUp(data) {
             break;
         case PlayerSettings.boost:
             _boost = false;
+            break;
+        case PlayerSettings._break:
+            _break = false;
             break;
     }
 }

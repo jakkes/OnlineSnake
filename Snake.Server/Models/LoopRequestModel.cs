@@ -10,5 +10,7 @@ namespace Snake.Server.Models
     {
         public Server.GameClasses.Player.TurnState Turn { get; set; }
         public bool Boost { get; set; }
+        public bool Break { get; set; }
+        public bool Shoot { get; set; }
     }
 }

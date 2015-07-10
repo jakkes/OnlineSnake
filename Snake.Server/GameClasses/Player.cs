@@ -71,6 +71,31 @@ namespace Snake.Server.GameClasses
                 }
             }
         }
+        public int BreakStored { get; set; }
+        public bool Break
+        {
+            get { return _break; }
+            set
+            {
+                _break = value;
+                if (_break)
+                {
+                    BreakStored -= 100;
+                    if (BreakStored > 0)
+                    {
+                        breakReplenishTimer.Stop();
+                        MovementLength = (int)(Config.data.BASE_MOVEMENT_LENGTH * 2/3);
+                        breakTimer.Start();
+                    }
+                }
+                else
+                {
+                    breakTimer.Stop();
+                    MovementLength = Config.data.BASE_MOVEMENT_LENGTH;
+                    breakReplenishTimer.Start();
+                }
+            }
+        }
         public bool Armor { get { return _armor; } set { _armor = value; } }
         public bool Alive { get; set; }
 
@@ -90,8 +115,11 @@ namespace Snake.Server.GameClasses
         protected Timer invulnerableTimer;
         protected Timer boostReplenishTimer;
         protected Timer boostTimer;
+        protected Timer breakTimer;
+        protected Timer breakReplenishTimer;
 
         private int _score = 0;
+        private bool _break;
         private bool _boost;
         private bool _armor = false;
         private bool _invulnerable = false;
@@ -121,6 +149,34 @@ namespace Snake.Server.GameClasses
             setMoveTimer();
             setTurnTimer();
             setBoostTimer();
+            setBreakTimer();
+        }
+
+        protected void setBreakTimer()
+        {
+            breakReplenishTimer = new Timer(100);
+            breakReplenishTimer.Elapsed += (o, e) =>
+            {
+                BreakStored += 25;
+                if (BreakStored >= Config.data.BOOST_CAP)
+                {
+                    BreakStored = Config.data.BOOST_CAP;
+                    breakReplenishTimer.Stop();
+                }
+            };
+
+            breakTimer = new Timer(100);
+            breakTimer.Elapsed += (o, e) =>
+            {
+                BreakStored -= 100;
+                if (BreakStored <= 0)
+                {
+                    BreakStored = 0;
+                    Break = false;
+                }
+            };
+
+            Break = false;
         }
 
         protected void setBoostTimer()
@@ -194,7 +250,7 @@ namespace Snake.Server.GameClasses
                 var d = new DeadPlayer(Points.Skip(index).ToArray(), this);
 
                 Score -= (int)Math.Floor((double)(Length - index - 1) / 2 / Config.data.FOOD_GROW);
-                src.Source.Score += (int)Math.Floor((double)(Length - index - 1) / 3 / Config.data.FOOD_GROW);
+                src.Source.Score += (int)Math.Ceiling((double)(Length - index - 1) / 3 / Config.data.FOOD_GROW);
                 Length = index + 1;
 
                 src.Die();
