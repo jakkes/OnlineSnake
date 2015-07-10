@@ -19,6 +19,7 @@ namespace Snake.Server.GameClasses
         {
             Source = src;
             _points = points.ToList();
+            Alive = true;
             Length = points.Length;
             MovementLength = Config.data.BASE_MOVEMENT_LENGTH;
             MakeInvulnerable(1000);

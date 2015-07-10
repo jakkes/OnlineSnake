@@ -72,6 +72,7 @@ namespace Snake.Server.GameClasses
             }
         }
         public bool Armor { get { return _armor; } set { _armor = value; } }
+        public bool Alive { get; set; }
 
         public delegate void FireHandler(Player sender, Shot shot);
         public delegate void SplitHandler(Player sender, DeadPlayer deadPart);
@@ -115,6 +116,7 @@ namespace Snake.Server.GameClasses
             Length = Config.data.BASE_LENGTH;
             RealPlayer = true;
             Score = 0;
+            Alive = true;
 
             setMoveTimer();
             setTurnTimer();
@@ -241,7 +243,7 @@ namespace Snake.Server.GameClasses
                     source.Score += 5;
                 else
                 {
-                    if (((DeadPlayer)this).Source != this)
+                    if (((DeadPlayer)this).Source != source)
                     {
                         source.Score += 5;
                     }
@@ -251,7 +253,9 @@ namespace Snake.Server.GameClasses
 
         public bool Die()
         {
-            if (Invulnerable) return false;
+            if (Invulnerable || !Alive) return false;
+            
+            Alive = false;
 
             if (moveTimer != null)
             {
