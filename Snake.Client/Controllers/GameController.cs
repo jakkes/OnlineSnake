@@ -20,6 +20,13 @@ namespace Snake.Client.Controllers
             return View((UserModel)Session["User"]);
         }
 
+        public ActionResult New()
+        {
+            if (Session["User"] == null || string.IsNullOrEmpty(((UserModel)Session["User"]).Token))
+                return RedirectToAction("Index", "Home");
+            return View((UserModel)Session["User"]);
+        }
+
         [HttpPost]
         public JsonResult Loop(LoopRequestModel model)
         {

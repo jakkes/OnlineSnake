@@ -31,7 +31,10 @@ namespace Snake.Server.GameClasses
                     ScoreChanged(this,null);
             }
         }
-        public bool Invulnerable { get { return _invulnerable; } }
+        public bool Invulnerable
+        {
+            get { return _invulnerable; }
+        }
         public bool RealPlayer { get; set; }
         public Position[] Points
         {

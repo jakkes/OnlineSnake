@@ -95,6 +95,7 @@ namespace Snake.Server
         private Timer ammoTimer;
         private Timer armorTimer;
         private Timer boardTimer;
+        private Timer settingsCheckTimer;
 
         private List<Food> _food;
         private List<Player> _snakes;
@@ -123,6 +124,7 @@ namespace Snake.Server
             SetAmmoTimer();
             SetArmorTimer();
             SetBoardTimer();
+            SetSettingsCheckTimer();
         }
 
         public void ReloadSettings()
@@ -130,6 +132,20 @@ namespace Snake.Server
             Config.data = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Config.BaseFilePath + "Config.json"));
             Settings = Config.data;
         }
+
+        #region SettingsCheck
+        private void SetSettingsCheckTimer()
+        {
+            settingsCheckTimer = new Timer(2000);
+            settingsCheckTimer.Elapsed += settingsCheckTimer_Elapsed;
+            settingsCheckTimer.Start();
+        }
+
+        private void settingsCheckTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _onlineCount = _snakes.Count;
+        }
+        #endregion
 
         #region Snake
         private void AddSnake(Player s)
@@ -318,7 +334,7 @@ namespace Snake.Server
                     {
                         if (head.DistanceTo(op[i]) < Settings.SNAKE_RADIUS * 2)
                         {
-                            s.Die();
+                            s.Die(o);
                             continue;
                         }
                     }

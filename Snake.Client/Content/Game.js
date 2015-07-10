@@ -87,7 +87,7 @@ function loop() {
 }
 
 function getData() {
-    $.get("/Game/GetOnlineData", "", function (data) {
+    $.get("/Game/GetData", "", function (data) {
         if (data.ConnectionCode != "200")
             return;
         $("#CurrentLeaderLb").text(data.CurrentLeader.Name + " (" + data.CurrentLeader.Score + ")");
@@ -226,4 +226,4 @@ function keyUp(data) {
 
 init();
 
-//$(window).resize(resize);
+$(window).resize(resize);
