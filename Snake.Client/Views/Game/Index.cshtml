@@ -1,76 +1,202 @@
 ﻿@model Snake.Client.Models.UserModel
 
 @{
-    Layout = null;  
+    Layout = null;
 }
 
 <!DOCTYPE html>
 
-<html>
+<html style="overflow-x:hidden">
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Play</title>
     <script src="~/Scripts/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript">
-        var Token = "@Model.Token";
-    </script>
+    <script src="~/Scripts/Game.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/JavascriptCookies.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <style type="text/css">
+        @@media (max-width:991px) {
+            html {
+                overflow-y: visible;
+            }
+        }
+
+        @@media (min-width:992px) {
+            html {
+                overflow-y: hidden;
+            }
+
+            ddddd
+        }
+
         p {
-            text-align:left;
+            text-align: left;
+        }
+
+        canvas {
+            width: 750px;
+            border-radius: 50%;
+            height: 750px;
+            background-color: white;
+        }
+
+        .panel button {
+            float: right;
         }
     </style>
 </head>
-<body style="margin:0; background-color:black">
-    <div style="margin:20px">
-        
-        <center>
-            <canvas style="background-color:white;border-radius:500px;" width="1000" height="1000" id="game"></canvas>
-            <p style="position:absolute;color:white;font-family:Arial;top:30px;left:20px;">
-                Score: <span id="ScoreLb">0</span> (<span id="PersonalLb"></span>)
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;top:70px;left:20px;">
-                Current leader: <span id="CurrentLeaderLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;top:100px;left:20px;">
-                Leaderboard: <br/>
-                <span id="Leaderboard"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;top:30px;right:20px;">
-                FPS: <span id="FpsLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;bottom:150px;left:20px;">
-                Armor: <span id="ArmorLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;bottom:110px;left:20px;">
-                Ammo: <span id="AmmoLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;bottom:70px;left:20px;">
-                Boost: <span id="BoostLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;bottom:30px;left:20px;">
-                Break: <span id="BreakLb"></span>
-            </p>
-            <p style="position:absolute;color:white;font-family:Arial;top:70px;right:20px;">
-                Players online: <span id="OnlineLb"></span>
-                <br/>
-                <br/>
-                <span id="PlayersOnlineLb"></span>
-            </p>
-            <p id="Controls" style="position:absolute;color:white;font-family:Arial;bottom:30px;right:20px;">
-                <strong>
-                    Controls
-                </strong>
-                <br/> Turn left: Left arrow key
-                <br/> Turn right: Right arrow key
-                <br/> Shoot: Space bar
-                <br/> Boost: Shift
-                <br/><br/><a style="color:white;" href="/Home/Logout">Logout</a>
-            </p>
-        </center>
-
+<body>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-target="#PersonalPanel">Personal</div>
+                <div class="panel-body collapse in" id="PersonalPanel">
+                    <p>Score: <span id="ScoreLb"></span> (<span id="PersonalLb"></span>)</p>
+                    <p>Ammo: <span id="AmmoLb"></span></p>
+                    <p>Armor: <span id="ArmorLb"></span></p>
+                    <p>Boost: <span id="BoostLb"></span>/100</p>
+                    <p>Slowmo: <span id="BreakLb"></span>/100</p>
+                </div>
+                <div class="panel-heading" data-toggle="collapse" data-target="#OnlinePanel">Online data</div>
+                <div class="panel-body collapse in" id="OnlinePanel">
+                    <p>Players online: <span id="OnlineLb"></span></p>
+                    <ul style="list-style-type:none;" id="PlayersOnlineLb"></ul>
+                </div>
+                <div class="panel-heading" data-toggle="collapse" data-target="#LeaderboardPanel">Leaderboard</div>
+                <div class="panel-body collapse in" id="LeaderboardPanel">
+                    <p>Current leader: <span id="CurrentLeaderLb"></span></p>
+                    <ol id="Leaderboard"></ol>
+                </div>
+                <div class="panel-heading" data-toggle="collapse" data-target="#SettingsPanel">Settings</div>
+                <div class="panel-body collapse" id="SettingsPanel">
+                    <p>FPS: <span id="FpsLb"></span></p>
+                    <p>Turn left: <span id="TurnLeftKey"></span> <button onclick="changeSetting('TurnLeft')" class="btn btn-primary btn-xs">Change</button></p>
+                    <p>Turn right: <span id="TurnRightKey"></span> <button onclick="changeSetting('TurnRight')" class="btn btn-primary btn-xs">Change</button></p>
+                    <p>Boost: <span id="BoostKey"></span> <button onclick="changeSetting('Boost')" class="btn btn-primary btn-xs">Change</button></p>
+                    <p>Slowmo: <span id="SlowmoKey"></span> <button onclick="changeSetting('Slowmo')" class="btn btn-primary btn-xs">Change</button></p>
+                    <p>Shoot: <span id="ShootKey"></span> <button onclick="changeSetting('Shoot')" class="btn btn-primary btn-xs">Change</button></p>
+                    <p>Timeout value*: <input type="number" min="20" max="1500" id="TimeoutValue" style="width:52.6px;float:right" /> </p>
+                    <p>* If you have consistent lag try increasing this value. If you have random lag spikes try lowering this value.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10" id="gameContainer">
+            <center>
+                <canvas id="game" width="1000" height="1000"></canvas>
+            </center>
+        </div>
     </div>
 
-    <script src="~/Content/Game.js"></script>
+    <script type="text/javascript">
+
+        var Settings = {
+            TurnLeft: 37,
+            TurnRight: 39,
+            Boost: 38,
+            Slowmo: 40,
+            Shoot: 32,
+            Timeout: 150
+        };
+
+        var uiData = {
+            canvas: document.getElementById("game"),
+            ammo: $("#AmmoLb"),
+            armor: $("#ArmorLb"),
+            onlineCount: $("#OnlineLb"),
+            players: $("#PlayersOnlineLb"),
+            boost: $("#BoostLb"),
+            score: $("#ScoreLb"),
+            leader: $("#CurrentLeaderLb"),
+            leaderboard: $("#Leaderboard"),
+            personalHighscore: $("#PersonalLb"),
+            fps: $("#FpsLb"),
+            slowmo: $("#BreakLb")
+        }
+
+        var g;
+
+        function translateKeyCode(code) {
+            switch (code) {
+                case 37: return "Left arrow";
+                case 38: return "Up arrow";
+                case 39: return "Right arrow";
+                case 40: return "Down arrow";
+                case 32: return "Space";
+                default: return String.fromCharCode(code);
+            }
+        }
+
+        function saveSettings() {
+            docCookies.setItem("settings", JSON.stringify(Settings));
+        }
+
+        function getSettings() {
+            if (!docCookies.hasItem("settings")) return null;
+            return JSON.parse(docCookies.getItem("settings"));
+        }
+
+        function changeSetting(setting) {
+            $("#" + setting + "Key").text("<Press a key>");
+
+            window.addEventListener("keydown", keydown);
+
+            function keydown(key) {
+                window.removeEventListener("keydown", keydown);
+
+                switch (setting) {
+                    case "TurnLeft":
+                        Settings.TurnLeft = key.keyCode;
+                        break;
+                    case "TurnRight":
+                        Settings.TurnRight = key.keyCode;
+                        break;
+                    case "Boost":
+                        Settings.Boost = key.keyCode;
+                        break;
+                    case "Slowmo":
+                        Settings.Slowmo = key.keyCode;
+                        break;
+                    case "Shoot":
+                        Settings.Shoot = key.keyCode;
+                        break;
+                }
+
+                showSettings();
+                saveSettings();
+            }
+        }
+
+        function showSettings() {
+            $("#TurnLeftKey").text(translateKeyCode(Settings.TurnLeft));
+            $("#TurnRightKey").text(translateKeyCode(Settings.TurnRight));
+            $("#BoostKey").text(translateKeyCode(Settings.Boost));
+            $("#SlowmoKey").text(translateKeyCode(Settings.Slowmo));
+            $("#ShootKey").text(translateKeyCode(Settings.Shoot));
+            $("#TimeoutValue").val(Settings.Timeout);
+        }
+
+        function newGame() {
+            g = new Game(uiData, Settings, newGame);
+        }
+
+        if (docCookies.hasItem("settings")) {
+            Settings = JSON.parse(docCookies.getItem("settings"));
+        } else {
+            saveSettings();
+        }
+
+        newGame();
+        showSettings();
+
+        $("#TimeoutValue").change(function () {
+            Settings.Timeout = $("#TimeoutValue").val();
+            saveSettings();
+            showSettings();
+        });
+
+    </script>
 
 </body>
+
 </html>
