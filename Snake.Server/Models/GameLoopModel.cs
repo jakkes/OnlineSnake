@@ -21,6 +21,7 @@ namespace Snake.Server.Models
         public int BoostStored { get; set; }
         public bool PlayerArmor { get; set; }
         public int BreakStored { get; set; }
+        public int Length { get; set; }
 
         public GameLoopModel()
         {

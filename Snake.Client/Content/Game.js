@@ -119,10 +119,15 @@ function tY(y) {
 
 function draw(d) {
     try {
-        if (d.ConnectionCode != "200") {
-            Stop();
+
+        if (data.ConnectionCode == "404") {
+            _this.GameOver();
+            return;
+        } else if (data.ConnectionCode != "200") {
+            _this.Stop();
             return;
         }
+
         $("#ScoreLb").text(d.Score);
         $("#AmmoLb").text(d.AmmoCount);
         $("#ArmorLb").text(d.PlayerArmor);
@@ -185,11 +190,17 @@ function draw(d) {
     loopDone = true;
 }
 
-function Stop() {
-    clearInterval(loopTimer);
-    clearInterval(dataTimer);
-    clearInterval(fpsTimer);
-    location.reload();
+this.GameOver = function () {
+    _this.Stop();
+}
+
+this.Stop = function () {
+    clearInterval(_this.loopTimer);
+    clearInterval(_this.fpsTimer);
+    clearInterval(_this.dataTimer);
+    window.removeEventListener("keydown", _this.KeyDown);
+    window.removeEventListener("keyup", _this.KeyUp);
+    callback();
 }
 
 window.addEventListener("keydown", keyDown)

@@ -45,6 +45,7 @@ namespace Snake.Server
             r.BoostStored = snake.BoostStored;
             r.PlayerArmor = snake.Armor;
             r.BreakStored = snake.BreakStored;
+            r.Length = snake.Length;
 
             #region Snakes
             foreach (var s in Snakes)

@@ -177,7 +177,7 @@
         }
 
         function newGame() {
-            g = new Game(uiData, Settings, newGame);
+            g = new Game(uiData, Settings, function () { location.reload();});
         }
 
         if (docCookies.hasItem("settings")) {

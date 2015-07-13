@@ -22,16 +22,19 @@
     this.foodImg = new Image();
     this.foodImg.src = "/Content/img/food.png";
     
-    this.loopTimer;
-    this.frameCount = 0;
-    this.fpsTimer;
-    this.dataTimer;
+    _this.loopTimer;
+    _this.frameCount = 0;
+    _this.fpsTimer;
+    _this.dataTimer;
 
     this.isBoosting = false;
     this.isTurningLeft = false;
     this.isTurningRight = false;
     this.isShooting = false;
     this.isBreaking = false;
+
+    _this.Length;
+    _this.Ammo = 0;
 
     this.Resize = function () {
         var width = $("#gameContainer").width();
@@ -72,7 +75,6 @@
     }
 
     this.Loop = function () {
-
         var turn = "None";
         if(_this.isTurningLeft) turn = "Left";
         else if(_this.isTurningRight) turn = "Right";
@@ -106,14 +108,30 @@
         function ty(y) {
             return y + _this.canvas.height / 2;
         }
-
-        if (data.ConnectionCode == "404") {
-            _this.GameOver();
-            return;
-        } else if (data.ConnectionCode != "200") {
+        console.log(data.ConnectionCode);
+        if (data.ConnectionCode != "200") {
             _this.Stop();
-            return;
         }
+
+        if (_this.Length < data.Length) {
+            var a = new Audio("/Sounds/eat.mp3");
+            a.currentTime = 0.5;
+            a.play();
+            setTimeout(function () { a.pause(); }, 1000);
+        }
+        if (_this.Ammo > data.AmmoCount) {
+            var a = new Audio("/Sounds/fire.mp3");
+            a.play();
+            setTimeout(function () { a.pause(); }, 1000);
+        }
+        if (_this.Ammo < data.AmmoCount) {
+            var a = new Audio("/Sounds/reload.mp3");
+            a.play();
+            setTimeout(function () { a.pause(); }, 1000);
+        }
+
+        _this.Length = data.Length;
+        _this.Ammo = data.AmmoCount;
 
         //Set text
         _this.score.text(data.Score);
@@ -148,9 +166,10 @@
         }
 
         //Draw food
-        for (var i = 0; i < data.Food.length; i++)
+        for (var i = 0; i < data.Food.length; i++) {
             _this.context.drawImage(_this.foodImg, tx(data.Food[i].X - _this.GameSettings.FOOD_RADIUS), ty(data.Food[i].Y - _this.GameSettings.FOOD_RADIUS), _this.GameSettings.FOOD_RADIUS * 2, _this.GameSettings.FOOD_RADIUS * 2);
-        
+        }
+
         //Shots
         for (var i = 0; i < data.Shots.length; i++) {
             _this.context.beginPath();
@@ -231,7 +250,7 @@
         clearInterval(_this.dataTimer);
         window.removeEventListener("keydown", _this.KeyDown);
         window.removeEventListener("keyup", _this.KeyUp);
-        callback();
+        location.reload();
     }
 
     window.addEventListener("keydown", _this.KeyDown);
@@ -242,9 +261,10 @@
     $.getJSON("/Game/GetSettings", "", function (data) {
         _this.Resize();
         _this.GameSettings = data;
+        _this.Length = data.Length;
         $.getJSON("/Game/Join", "", function (data) {
             if (data.ConnectionCode == "200") {
-                _this.loopTimer = setInterval(_this.Loop, 1000 / 30);
+                _this.loopTimer = setInterval(_this.Loop, 33);
                 _this.fpsTimer = setInterval(_this.CalcFPS, 1000);
                 _this.dataTimer = setInterval(_this.GetData, 2000);
             }

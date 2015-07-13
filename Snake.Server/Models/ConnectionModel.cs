@@ -10,5 +10,6 @@ namespace Snake.Server.Models
     {
         public string ConnectionCode = "200";
         public string ConnectionString = "Success";
+        public string SoundFile = "";
     }
 }

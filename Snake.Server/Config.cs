@@ -46,8 +46,8 @@
         public string DEAD_SNAKE_COLOR { get; set; }
 
         //public static string BaseFilePath = @"C:\Users\Jakob\Documents\Visual Studio 2013\Projects\OnlineSnake\Snake.Server\";
-        public static string BaseFilePath = @"C:\inetpub\wwwroot\Snake.Server\";
-        //public static string BaseFilePath = @"C:\Users\jakostig\Documents\GitHub\OnlineSnake\Snake.Server\";
+        //public static string BaseFilePath = @"C:\inetpub\wwwroot\Snake.Server\";
+        public static string BaseFilePath = @"C:\Users\jakostig\Documents\GitHub\OnlineSnake\Snake.Server\";
         
         public static string LeaderboardFile = BaseFilePath + @"Data\Leaderboard.json";
         public static string PersonalHighscoreFile = BaseFilePath + @"Data\PersonalHighscore.json";
