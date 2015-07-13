@@ -22,10 +22,10 @@
     this.foodImg = new Image();
     this.foodImg.src = "/Content/img/food.png";
     
-    _this.loopTimer;
+    var loopTimer;
     _this.frameCount = 0;
-    _this.fpsTimer;
-    _this.dataTimer;
+    var fpsTimer;
+    var dataTimer;
 
     this.isBoosting = false;
     this.isTurningLeft = false;
@@ -108,9 +108,9 @@
         function ty(y) {
             return y + _this.canvas.height / 2;
         }
-        console.log(data.ConnectionCode);
         if (data.ConnectionCode != "200") {
             _this.Stop();
+            return;
         }
 
         if (_this.Length < data.Length) {
@@ -250,7 +250,7 @@
         clearInterval(_this.dataTimer);
         window.removeEventListener("keydown", _this.KeyDown);
         window.removeEventListener("keyup", _this.KeyUp);
-        location.reload();
+        callback();
     }
 
     window.addEventListener("keydown", _this.KeyDown);
@@ -258,16 +258,19 @@
     
     $(window).resize(_this.Resize);
 
-    $.getJSON("/Game/GetSettings", "", function (data) {
-        _this.Resize();
-        _this.GameSettings = data;
-        _this.Length = data.Length;
-        $.getJSON("/Game/Join", "", function (data) {
-            if (data.ConnectionCode == "200") {
-                _this.loopTimer = setInterval(_this.Loop, 33);
-                _this.fpsTimer = setInterval(_this.CalcFPS, 1000);
-                _this.dataTimer = setInterval(_this.GetData, 2000);
-            }
+    this.init = function() {
+        $.getJSON("/Game/GetSettings", "", function (data) {
+            _this.Resize();
+            _this.GameSettings = data;
+            _this.Length = data.Length;
+            $.getJSON("/Game/Join", "", function (data) {
+                if (data.ConnectionCode == "200") {
+                    _this.loopTimer = setInterval(_this.Loop, 33);
+                    _this.fpsTimer = setInterval(_this.CalcFPS, 1000);
+                    _this.dataTimer = setInterval(_this.GetData, 2000);
+                }
+            });
         });
-    });
+    }
+    _this.init();
 }

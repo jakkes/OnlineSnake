@@ -14,16 +14,7 @@ namespace Snake.Client
 
         public static GameLoopModel Loop(string Token, LoopRequestModel model)
         {
-            try
-            {
-                return Game.GetLoopData(Token, model);
-            }
-            catch (GameException e)
-            {
-                if (e.Type == GameException.ExceptionType.InvalidToken)
-                    return new GameLoopModel() { ConnectionCode = "404", ConnectionString = "Snake does not exist" };
-                return new GameLoopModel() { ConnectionCode = "0", ConnectionString = "Unknown error" };
-            }
+            return Game.GetLoopData(Token, model);
         }
 
         public static ConnectionModel Join(string Token, string Name)

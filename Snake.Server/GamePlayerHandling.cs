@@ -27,15 +27,15 @@ namespace Snake.Server
         public GameLoopModel GetLoopData(string Token, LoopRequestModel model)
         {
             Player snake = GetPlayer(Token);
+            if (snake == null)
+                return new GameLoopModel() { ConnectionCode = "404", ConnectionString = "Snake not found" };
             snake.Turn = model.Turn;
             if (snake.Boost != model.Boost)
                 snake.Boost = model.Boost;
             if (snake.Break != model.Break)
                 snake.Break = model.Break;
             if (model.Shoot == true)
-            {
                 snake.Shoot();
-            }
 
             var Head = snake.Head;
             GameLoopModel r = new GameLoopModel();
@@ -151,11 +151,10 @@ namespace Snake.Server
 
         private Player GetPlayer(string Token)
         {
-            var p = Snakes.FirstOrDefault(x => x.Token == Token);
-            if (p != null)
-                return p;
-            else
-                throw new GameException(GameException.ExceptionType.InvalidToken);
+            foreach (var s in Snakes)
+                if (s.Token == Token)
+                    return s;
+            return null;
         }
     }
 }

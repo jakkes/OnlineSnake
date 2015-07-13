@@ -113,9 +113,7 @@
             fps: $("#FpsLb"),
             slowmo: $("#BreakLb")
         }
-
-        var g;
-
+        
         function translateKeyCode(code) {
             switch (code) {
                 case 37: return "Left arrow";
@@ -176,18 +174,19 @@
             $("#TimeoutValue").val(Settings.Timeout);
         }
 
+        var g;
         function newGame() {
-            g = new Game(uiData, Settings, function () { location.reload();});
+            g = null;
+            g = new Game(uiData, Settings, newGame);
         }
-
         if (docCookies.hasItem("settings")) {
             Settings = JSON.parse(docCookies.getItem("settings"));
         } else {
             saveSettings();
         }
 
-        newGame();
         showSettings();
+        newGame();
 
         $("#TimeoutValue").change(function () {
             Settings.Timeout = $("#TimeoutValue").val();
