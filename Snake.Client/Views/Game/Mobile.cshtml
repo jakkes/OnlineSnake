@@ -1,0 +1,98 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Mobile</title>
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/Game.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <style type="text/css">
+        div.button {
+            background-repeat:no-repeat;
+            height:64px;
+            min-width:64px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="row">
+        <div class="col-xs-12" style="color:white">
+            Score: <span id="ScoreLb"></span> (<span id="PersonalLb"></span>) - Ammo: <span id="AmmoLb"></span> - Armor: <span id="ArmorLb"></span> - Boost: <span id="BoostLb"></span>/100 - Slowmo: <span id="BreakLb"></span>/100
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <center>
+                    <canvas id="game" style="background-color:white;border-radius:500px;" width="1000" height="1000"></canvas>
+                </center>
+            </div>
+        </div>
+        <div class="row" style="background-color:gray;" >
+            <div class="col-xs-12">
+                <div class="col-sm-4">
+                    <div class="button" id="left" style="background-image:url('/Content/img/left.png');float:left;">
+
+                    </div>
+                    <div class="button" id="right" style="background-image:url('/Content/img/right.png');float:left;">
+
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="button" id="boost" style="background-image:url('/Content/img/up.png');float:right">
+
+                    </div>
+                    <div class="button" id="slowmo" style="background-image:url('/Content/img/down.png');float:right">
+
+                    </div>
+                    <div class="button" id="shoot" style="background-image:url('/Content/img/Shoot.png');float:right">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var g;
+
+        var uiData = {
+            canvas: document.getElementById("game"),
+            ammo: $("#AmmoLb"),
+            armor: $("#ArmorLb"),
+            onlineCount: $("#OnlineLb"),
+            players: $("#PlayersOnlineLb"),
+            boost: $("#BoostLb"),
+            score: $("#ScoreLb"),
+            leader: $("#CurrentLeaderLb"),
+            leaderboard: $("#Leaderboard"),
+            personalHighscore: $("#PersonalLb"),
+            fps: $("#FpsLb"),
+            slowmo: $("#BreakLb")
+        }
+
+        var settings = {
+            left: document.getElementById("left"),
+            right: document.getElementById("right"),
+            boost: document.getElementById("boost"),
+            slowmo: document.getElementById("slowmo"),
+            shoot: document.getElementById("shoot")
+        }
+
+        function newGame() {
+            g = null;
+            g = new Game(uiData, settings, newGame, true);
+        }
+
+        newGame();
+
+    </script>
+
+</body>
+</html>

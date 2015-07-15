@@ -1,4 +1,4 @@
-﻿var Game = function (uiData, settings, callback) {
+﻿var Game = function (uiData, settings, callback, isMobile) {
 
     _this = this;
     this.canvas = uiData.canvas;
@@ -24,6 +24,7 @@
     
     var loopTimer;
     _this.frameCount = 0;
+    _this.timeoutCount = 0;
     var fpsTimer;
     var dataTimer;
 
@@ -37,15 +38,25 @@
     _this.Ammo = 0;
 
     this.Resize = function () {
-        var width = $("#gameContainer").width();
+        var width;
+        if (isMobile)
+            width = $(window).innerWidth();
+        else
+            width = $("#gameContainer").width();
         var height = $(window).innerHeight();
+
+        if (isMobile) {
+            height -= 64;
+        }
 
         if (width < height) {
             $("canvas").css("width", width);
             $("canvas").css("height", width);
+            $("canvas").css("border-radius", width / 2);
         } else {
             $("canvas").css("width", height);
             $("canvas").css("height", height);
+            $("canvas").css("border-radius", height / 2);
         }
     }
 
@@ -97,6 +108,7 @@
             },
             error: function (err) {
                 console.log("Opted out of loop");
+                _this.timeoutCount++;
             }
         });
     }
@@ -112,95 +124,106 @@
             _this.Stop();
             return;
         }
-
-        if (_this.Length < data.Length) {
-            var a = new Audio("/Sounds/eat.mp3");
-            a.currentTime = 0.5;
-            a.play();
-            setTimeout(function () { a.pause(); }, 1000);
-        }
-        if (_this.Ammo > data.AmmoCount) {
-            var a = new Audio("/Sounds/fire.mp3");
-            a.play();
-            setTimeout(function () { a.pause(); }, 1000);
-        }
-        if (_this.Ammo < data.AmmoCount) {
-            var a = new Audio("/Sounds/reload.mp3");
-            a.play();
-            setTimeout(function () { a.pause(); }, 1000);
-        }
-
-        _this.Length = data.Length;
-        _this.Ammo = data.AmmoCount;
-
-        //Set text
-        _this.score.text(data.Score);
-        _this.ammo.text(data.AmmoCount);
-        _this.armor.text(data.PlayerArmor);
-        _this.boost.text(Math.round(data.BoostStored / 100));
-        _this.slowmo.text(Math.round(data.BreakStored / 100));
-
-        //Clear for redraw
-        _this.context.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-
-        //Draw borders
-        for (var i = 0; i < data.Borders.length; i++) {
-            _this.context.beginPath();
-            _this.context.moveTo(tx(data.Borders[i][0].X), ty(data.Borders[i][0].Y));
-            _this.context.lineTo(tx(data.Borders[i][1].X), ty(data.Borders[i][1].Y));
-            _this.context.lineWidth = 1;
-            _this.context.strokeStyle = "black";
-            _this.context.stroke();
-        }
-
-        //Draw snakes
-        for (var i = 0; i < data.Snakes.length; i++) {
-            _this.context.beginPath();
-            for (var n = 0; n < data.Snakes[i].Points.length - 1; n++) {
-                _this.context.moveTo(tx(data.Snakes[i].Points[n].X), ty(data.Snakes[i].Points[n].Y));
-                _this.context.lineTo(tx(data.Snakes[i].Points[n + 1].X), ty(data.Snakes[i].Points[n + 1].Y));
+        try{
+            if (_this.Length < data.Length) {
+                var a = new Audio("/Sounds/eat.mp3");
+                a.currentTime = 0.5;
+                a.play();
+                setTimeout(function () { a.pause(); }, 1000);
             }
-            _this.context.strokeStyle = data.Snakes[i].Color;
-            _this.context.lineWidth = _this.GameSettings.SNAKE_RADIUS * 2;
-            _this.context.stroke();
+            if (_this.Ammo > data.AmmoCount) {
+                var a = new Audio("/Sounds/fire.mp3");
+                a.play();
+                setTimeout(function () { a.pause(); }, 1000);
+            }
+            if (_this.Ammo < data.AmmoCount) {
+                var a = new Audio("/Sounds/reload.mp3");
+                a.play();
+                setTimeout(function () { a.pause(); }, 1000);
+            }
+
+            _this.Length = data.Length;
+            _this.Ammo = data.AmmoCount;
+
+            //Set text
+            _this.score.text(data.Score);
+            _this.ammo.text(data.AmmoCount);
+            _this.armor.text(data.PlayerArmor);
+            _this.boost.text(Math.round(data.BoostStored / 100));
+            _this.slowmo.text(Math.round(data.BreakStored / 100));
+
+            //Clear for redraw
+            _this.context.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+
+            //Draw borders
+            for (var i = 0; i < data.Borders.length; i++) {
+                _this.context.beginPath();
+                _this.context.moveTo(tx(data.Borders[i][0].X), ty(data.Borders[i][0].Y));
+                _this.context.lineTo(tx(data.Borders[i][1].X), ty(data.Borders[i][1].Y));
+                _this.context.lineWidth = 1;
+                _this.context.strokeStyle = "black";
+                _this.context.stroke();
+            }
+
+            //Draw snakes
+            for (var i = 0; i < data.Snakes.length; i++) {
+                _this.context.beginPath();
+                for (var n = 0; n < data.Snakes[i].Points.length - 1; n++) {
+                    _this.context.moveTo(tx(data.Snakes[i].Points[n].X), ty(data.Snakes[i].Points[n].Y));
+                    _this.context.lineTo(tx(data.Snakes[i].Points[n + 1].X), ty(data.Snakes[i].Points[n + 1].Y));
+                }
+                _this.context.strokeStyle = data.Snakes[i].Color;
+                _this.context.lineWidth = _this.GameSettings.SNAKE_RADIUS * 2;
+                _this.context.stroke();
+            }
+
+            //Draw food
+            for (var i = 0; i < data.Food.length; i++) {
+                _this.context.drawImage(_this.foodImg, tx(data.Food[i].X - _this.GameSettings.FOOD_RADIUS), ty(data.Food[i].Y - _this.GameSettings.FOOD_RADIUS), _this.GameSettings.FOOD_RADIUS * 2, _this.GameSettings.FOOD_RADIUS * 2);
+            }
+
+            //Shots
+            for (var i = 0; i < data.Shots.length; i++) {
+                _this.context.beginPath();
+                _this.context.arc(tx(data.Shots[i].X), ty(data.Shots[i].Y), _this.GameSettings.SHOT_RADIUS, Math.PI * 2, false);
+                _this.context.fillStyle = "black";
+                _this.context.fill();
+            }
+
+            //Ammo
+            for (var i = 0; i < data.Ammo.length; i++) {
+                _this.context.beginPath();
+                _this.context.arc(tx(data.Ammo[i].X), ty(data.Ammo[i].Y), _this.GameSettings.AMMO_RADIUS, Math.PI * 2, false);
+                _this.context.fillStyle = "black";
+                _this.context.fill();
+            }
+
+            //Armor
+            for (var i = 0; i < data.Armor.length; i++) {
+                _this.context.beginPath();
+                _this.context.arc(tx(data.Armor[i].X), ty(data.Armor[i].Y), _this.GameSettings.ARMOR_RADIUS, Math.PI * 2, false);
+                _this.context.fillStyle = "brown";
+                _this.context.fill();
+            }
+
+            _this.frameCount++;
+        } catch (err) {
+
         }
-
-        //Draw food
-        for (var i = 0; i < data.Food.length; i++) {
-            _this.context.drawImage(_this.foodImg, tx(data.Food[i].X - _this.GameSettings.FOOD_RADIUS), ty(data.Food[i].Y - _this.GameSettings.FOOD_RADIUS), _this.GameSettings.FOOD_RADIUS * 2, _this.GameSettings.FOOD_RADIUS * 2);
-        }
-
-        //Shots
-        for (var i = 0; i < data.Shots.length; i++) {
-            _this.context.beginPath();
-            _this.context.arc(tx(data.Shots[i].X), ty(data.Shots[i].Y), _this.GameSettings.SHOT_RADIUS, Math.PI * 2, false);
-            _this.context.fillStyle = "black";
-            _this.context.fill();
-        }
-
-        //Ammo
-        for (var i = 0; i < data.Ammo.length; i++) {
-            _this.context.beginPath();
-            _this.context.arc(tx(data.Ammo[i].X), ty(data.Ammo[i].Y), _this.GameSettings.AMMO_RADIUS, Math.PI * 2, false);
-            _this.context.fillStyle = "black";
-            _this.context.fill();
-        }
-
-        //Armor
-        for (var i = 0; i < data.Armor.length; i++) {
-            _this.context.beginPath();
-            _this.context.arc(tx(data.Armor[i].X), ty(data.Armor[i].Y), _this.GameSettings.ARMOR_RADIUS, Math.PI * 2, false);
-            _this.context.fillStyle = "brown";
-            _this.context.fill();
-        }
-
-        _this.frameCount++;
-
     }
 
     this.CalcFPS = function () {
         _this.fps.text(_this.frameCount);
         _this.frameCount = 0;
+
+        if (_this.timeoutCount > 2) {
+            if (_this.PlayerSettings.timeout >= 1500) {
+                
+            } else {
+                _this.PlayerSettings.timeout += 100;
+            }
+        }
+        _this.timeoutCount = 0;
     }
 
     this.KeyDown = function (key) {
@@ -248,14 +271,24 @@
         clearInterval(_this.loopTimer);
         clearInterval(_this.fpsTimer);
         clearInterval(_this.dataTimer);
-        window.removeEventListener("keydown", _this.KeyDown);
-        window.removeEventListener("keyup", _this.KeyUp);
         callback();
     }
 
-    window.addEventListener("keydown", _this.KeyDown);
-    window.addEventListener("keyup", _this.KeyUp);
-    
+    if (!isMobile) {
+        window.addEventListener("keydown", _this.KeyDown);
+        window.addEventListener("keyup", _this.KeyUp);
+    } else {
+        settings.left.addEventListener("touchstart", function () { _this.isTurningLeft = true;});
+        settings.left.addEventListener("touchend", function(){_this.isTurningLeft = false;});
+        settings.right.addEventListener("touchstart", function(){_this.isTurningRight = true;});
+        settings.right.addEventListener("touchend", function(){_this.isTurningRight = false;});
+        settings.boost.addEventListener("touchstart", function(){_this.isBoosting = true;});
+        settings.boost.addEventListener("touchend", function(){_this.isBoosting = false;});
+        settings.slowmo.addEventListener("touchstart", function(){_this.isBreaking = true;});
+        settings.slowmo.addEventListener("touchend", function(){_this.isBreaking = false;});
+        settings.shoot.addEventListener("touchstart", function () { _this.isShooting = true; });
+    }
+
     $(window).resize(_this.Resize);
 
     this.init = function() {

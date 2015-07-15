@@ -17,7 +17,18 @@ namespace Snake.Client.Controllers
         {
             if (Session["User"] == null || string.IsNullOrEmpty(((UserModel)Session["User"]).Token))
                 return RedirectToAction("Index", "Home");
+            if (Request.Browser.IsMobileDevice)
+                return RedirectToAction("Mobile");
             return View((UserModel)Session["User"]);
+        }
+
+        public ActionResult Mobile()
+        {
+            if (!Request.Browser.IsMobileDevice)
+                return RedirectToAction("Index");
+            if (Session["User"] == null || string.IsNullOrEmpty(((UserModel)Session["User"]).Token))
+                return RedirectToAction("Index", "Home");
+            return View();
         }
 
         public ActionResult New()

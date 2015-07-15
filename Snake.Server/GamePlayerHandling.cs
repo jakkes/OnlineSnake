@@ -135,16 +135,20 @@ namespace Snake.Server
 
         public OnlineDataModel GetOnlineData(string token)
         {
+            var s = Snakes;
+            if (s.Length == 0 || s.Count(x => x.RealPlayer) == 0)
+                return null;
+
             return new OnlineDataModel()
             {
                 Leaderboard = Highscores.Leaderboard,
                 CurrentLeader = new LeaderModel()
                 {
-                    Score = Snakes.Max(x => x.Score),
-                    Name = Snakes.First(x => x.Score == Snakes.Max(c => c.Score)).Name
+                    Score = s.Where(x => x.RealPlayer).Max(x => x.Score),
+                    Name = s.First(x => x.Score == s.Where(c => c.RealPlayer).Max(c => c.Score)).Name
                 },
                 OnlineCount = OnlineCount,
-                Players = Snakes.Where(x => x.RealPlayer == true).Select(x => new PlayerModel() { Name = x.Name, Color = x.Color }).ToList(),
+                Players = s.Where(x => x.RealPlayer == true).Select(x => new PlayerModel() { Name = x.Name, Color = x.Color }).ToList(),
                 PersonalHighscore = Highscores.PersonalHighscore(GetPlayer(token).Name).Score
             };
         }

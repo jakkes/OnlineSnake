@@ -26,8 +26,6 @@
             html {
                 overflow-y: hidden;
             }
-
-            ddddd
         }
 
         p {
@@ -48,7 +46,7 @@
 </head>
 <body>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-2" id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-target="#PersonalPanel">Personal</div>
                 <div class="panel-body collapse in" id="PersonalPanel">
@@ -83,7 +81,7 @@
         </div>
         <div class="col-md-10" id="gameContainer">
             <center>
-                <canvas id="game" width="1000" height="1000"></canvas>
+                <canvas id="game" width="1000" height="1000"></canvas>    
             </center>
         </div>
     </div>
@@ -177,8 +175,9 @@
         var g;
         function newGame() {
             g = null;
-            g = new Game(uiData, Settings, newGame);
+            g = new Game(uiData, Settings, newGame, false);
         }
+
         if (docCookies.hasItem("settings")) {
             Settings = JSON.parse(docCookies.getItem("settings"));
         } else {
@@ -197,5 +196,4 @@
     </script>
 
 </body>
-
 </html>

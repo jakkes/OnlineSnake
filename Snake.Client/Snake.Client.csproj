@@ -212,8 +212,12 @@
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Game.js" />
-    <Content Include="Content\img\ammo.png" />
+    <Content Include="Content\img\down.png" />
     <Content Include="Content\img\food.png" />
+    <Content Include="Content\img\left.png" />
+    <Content Include="Content\img\right.png" />
+    <Content Include="Content\img\Shoot.png" />
+    <Content Include="Content\img\up.png" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -272,6 +276,7 @@
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <Content Include="Scripts\knockout.validation.min.js.map" />
     <Content Include="Views\Game\New.cshtml" />
+    <Content Include="Views\Game\Mobile.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
