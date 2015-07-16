@@ -124,22 +124,26 @@
             _this.Stop();
             return;
         }
-        try{
-            if (_this.Length < data.Length) {
-                var a = new Audio("/Sounds/eat.mp3");
-                a.currentTime = 0.5;
-                a.play();
-                setTimeout(function () { a.pause(); }, 1000);
-            }
-            if (_this.Ammo > data.AmmoCount) {
-                var a = new Audio("/Sounds/fire.mp3");
-                a.play();
-                setTimeout(function () { a.pause(); }, 1000);
-            }
-            if (_this.Ammo < data.AmmoCount) {
-                var a = new Audio("/Sounds/reload.mp3");
-                a.play();
-                setTimeout(function () { a.pause(); }, 1000);
+        try {
+            try{
+                if (_this.Length < data.Length) {
+                    var a = new Audio("/Sounds/eat.mp3");
+                    a.currentTime = 0.5;
+                    a.play();
+                    setTimeout(function () { a.pause(); }, 1000);
+                }
+                if (_this.Ammo > data.AmmoCount) {
+                    var a = new Audio("/Sounds/fire.mp3");
+                    a.play();
+                    setTimeout(function () { a.pause(); }, 1000);
+                }
+                if (_this.Ammo < data.AmmoCount) {
+                    var a = new Audio("/Sounds/reload.mp3");
+                    a.play();
+                    setTimeout(function () { a.pause(); }, 1000);
+                }
+            } catch (err) {
+                console.log("Browser does not support .mp3");
             }
 
             _this.Length = data.Length;
